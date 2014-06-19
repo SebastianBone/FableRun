@@ -2,15 +2,12 @@ package com.example.fablerun;
 
 public class Animal {
 	
-	private String name, imgSource;
+	private String name;
 	private int speed;
 	
-	public Animal(String name, int speed, String imgSource){
-		
-		this.imgSource = imgSource;
+	public Animal(String name, int speed){
 		this.name = name;
 		this.speed= speed;
-		
 	}
 
 	public String getName() {
@@ -20,10 +17,4 @@ public class Animal {
 	public int getSpeed() {
 		return speed;
 	}
-
-	public String getImgSource() {
-		return imgSource;
-	}
-
-
 }

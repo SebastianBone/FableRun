@@ -108,6 +108,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
             	intent.putExtra(EXTRA_AVGSPEED, avgSpeed);
             	// open resultView
             	startActivity(intent);
+            	// finish this activity
+            	finish();
             }
         });
 		
