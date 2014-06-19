@@ -51,14 +51,13 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
-		// No Title and Fullscreen
+		// no title
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		// Find elements
+		// Find views
 		lblLat = (TextView) findViewById(R.id.lblLat);
 		lblLong = (TextView)findViewById(R.id.lblLong);
 		lblTotalSpeed = (TextView)findViewById(R.id.lblTotalSpeed);

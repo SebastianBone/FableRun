@@ -15,11 +15,17 @@ public class StartActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		// window settings
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
+		
+		// find views
 		button = (Button)findViewById(R.id.button1);
 		background = (ImageView)findViewById(R.id.imageView2);
+		
+		// button handler
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
