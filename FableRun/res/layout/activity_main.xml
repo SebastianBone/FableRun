@@ -1,100 +1,159 @@
-
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipToPadding="true"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <TextView
-        android:id="@+id/lblTotalSpeed"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lblLat"
-        android:layout_below="@+id/lblLat"
-        android:layout_marginTop="28dp"
-        android:text="Total Speed: "
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_gravity="center"
+        android:layout_weight="0.24"
+        android:scaleType="fitCenter"
+        android:src="@drawable/fable_run_banner_simple" />
 
-    <TextView
-        android:id="@+id/lblLat"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lblLong"
-        android:layout_below="@+id/lblLong"
-        android:layout_marginTop="30dp"
-        android:text="lat: "
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_gravity="center"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="20dp"
+        android:layout_weight="0.76"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/turtle_circle" />
 
-    <TextView
-        android:id="@+id/lblLong"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="47dp"
-        android:layout_marginTop="48dp"
-        android:text="long: "
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_margin="20dp"
+        android:layout_weight="0.45"
+        android:gravity="center" >
 
-    <TextView
-        android:id="@+id/lblAvgSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lblTotalSpeed"
-        android:layout_below="@+id/lblTotalSpeed"
-        android:layout_marginTop="40dp"
-        android:text="Avg Speed: "
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        <LinearLayout
+            android:id="@+id/LinearLayout01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/lblTotalTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lblAvgSpeed"
-        android:layout_below="@+id/lblAvgSpeed"
-        android:layout_marginTop="31dp"
-        android:text="Total Time: "
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+            <TextView
+                android:id="@+id/lblLat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="lat: "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/lblDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lblTotalTime"
-        android:layout_below="@+id/lblTotalTime"
-        android:layout_marginTop="16dp"
-        android:text="Distance:"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+            <TextView
+                android:id="@+id/lblLong"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="long: "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="11sp" />
 
-    <Button
-        android:id="@+id/butStartPause"
-        android:layout_width="100dp"
-        android:layout_height="41dp"
-        android:layout_alignBaseline="@+id/butStop"
-        android:layout_alignBottom="@+id/butStop"
-        android:layout_alignRight="@+id/lblDistance"
-        android:background="@drawable/buttonshape"
-        android:text="Start"
-        android:textColor="#FFFFFF"
-        android:textSize="21sp" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/butStop"
-        android:layout_width="100dp"
-        android:layout_height="41dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="77dp"
-        android:layout_toRightOf="@+id/lblTotalSpeed"
-        android:background="@drawable/buttonshape"
-        android:clickable="false"
-        android:text="Stop"
-        android:textColor="#FFFFFF"
-        android:textSize="21sp" />
+        <LinearLayout
+            android:id="@+id/LinearLayout02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
-   
-</RelativeLayout>
+            <TextView
+                android:id="@+id/lblTotalSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="Total Speed: "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/lblAvgSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="Avg Speed: "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/LinearLayout03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/lblTotalTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="Total Time: "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/lblDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:text="Distance:"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/butStartPause"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttonshape"
+            android:text="Start"
+            android:textColor="#000000"
+            android:textSize="21sp" />
+
+        <Button
+            android:id="@+id/butStop"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttonshape"
+            android:clickable="false"
+            android:text="Stop"
+            android:textColor="#000000"
+            android:textSize="21sp" />
+    </LinearLayout>
+
+</LinearLayout>
