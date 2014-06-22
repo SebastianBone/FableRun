@@ -1,46 +1,67 @@
 package com.example.fablerun;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.text.Layout;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements GpsStatus.Listener {
 	// Global variables
 	Context context;
-	private TextView lblLat, lblLong, lblTotalSpeed, lblAvgSpeed, lblTotalTime,lblDistance;
+	private TextView lblAvgSpeed, lblTotalTime, lblDistance, lblHelpText, lblResultText;
+	private ImageButton iconButton;
+	private ImageView bannerView, anglesUpView;
 	private double actualLatitude, actualLongitude; 
 	private double lastLatitude = 0.0;
 	private double lastLongitude = 0.0;
 	private float [] results = new float [0];
 	private float finalDistance = 0;
 	private float currentDistance;
-	private float currentSpeed;
 	private Button butStartPause, butStop;
 	private boolean isRunning = false;
-	private long startTime, stopTime;
+	private long startTime = 0;
+	private long totalTime;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
 	private boolean isGPSFix = false;
 	private Location mLastLocation = null;
 	private long mLastLocationMillis = 0;
-	private double avgSpeed;
-	final static String EXTRA_AVGSPEED = "avgSpeed";
+	private double avgSpeedInKmh;
+	// flag that tells the iconButton if it shall reset for a
+	// 	2nd run or initialize the UI for a first run
+	private boolean repeat = false;
+	// flag that shows pause status
+	private boolean paused = false;
+	// for resultView
+	ArrayList<Animal>animals = new ArrayList<Animal>();
+	Animal resultAnimal = null;
 	// flag for GPS status
     private boolean isGPSEnabled = false;
     // The minimum distance to change Updates in meters
@@ -48,6 +69,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
  	// The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
 	
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -57,23 +80,109 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		// Find views
-		lblLat = (TextView) findViewById(R.id.lblLat);
-		lblLong = (TextView)findViewById(R.id.lblLong);
-		lblTotalSpeed = (TextView)findViewById(R.id.lblTotalSpeed);
+		// find views
 		butStartPause = (Button)findViewById(R.id.butStartPause);
-		lblAvgSpeed = (TextView)findViewById(R.id.lblAvgSpeed);
-		lblTotalTime = (TextView)findViewById(R.id.lblTotalTime);
-		lblDistance = (TextView)findViewById(R.id.lblDistance);
 		butStop = (Button)findViewById(R.id.butStop);
+		lblTotalTime = (TextView)findViewById(R.id.lblTotalTime);
+		lblAvgSpeed = (TextView)findViewById(R.id.lblAvgSpeed);
+		iconButton = (ImageButton)findViewById(R.id.iconButton);
+		bannerView = (ImageView)findViewById(R.id.bannerView);
+		anglesUpView = (ImageView)findViewById(R.id.anglesUpView);
+		lblHelpText = (TextView)findViewById(R.id.lblHelpText);
+		lblResultText = (TextView)findViewById(R.id.lblResultText);
+		
+		// initialize animations
+		final Animation animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
+		final Animation animationFadeOut = AnimationUtils.loadAnimation(this, R.anim.fadeout);
+		
+		// create animals (will be sorted automatically)
+		Animal baer = new Animal("baer", "Bär", 30);
+		animals.add(baer);
+		Animal eichhoernchen = new Animal("eichhoernchen", "Eichhörnchen", 24);
+		animals.add(eichhoernchen);
+		Animal elefant = new Animal("elefant", "Elefant", 40);
+		animals.add(elefant);
+		Animal fliege = new Animal("fliege", "Fliege", 6);
+		animals.add(fliege);
+		Animal hase = new Animal("hase", "Kaninchen", 34);
+		animals.add(hase);
+		Animal huhn = new Animal("huhn", "Huhn", 15);
+		animals.add(huhn);
+		Animal hund = new Animal("hund", "Hund", 36);
+		animals.add(hund);
+		Animal katze = new Animal("katze", "Katze", 32);
+		animals.add(katze);
+		Animal schildkroete = new Animal("schildkroete", "Schildkröte", 2);
+		animals.add(schildkroete);
+		Animal schlange = new Animal("schlange", "Schlange", 21);
+		animals.add(schlange);
+		Animal schnecke = new Animal("schnecke", "Schnecke", 1);
+		animals.add(schnecke);
+		Animal schwein = new Animal("schwein", "Schwein", 18);
+		animals.add(schwein);
+		Animal spinne = new Animal("spinne", "Spinne", 3);
+		animals.add(spinne);
+		Animal stein = new Animal("stein", "Stein", 0);
+		animals.add(stein);
+		Animal maus = new Animal("maus", "Maus", 12);
+		animals.add(maus);
+		Animal meerschweinchen = new Animal("meerschweinchen", "Meerschweinchen", 9);
+		animals.add(meerschweinchen);
+		Animal eidechse = new Animal("eidechse", "Eidechse", 27);
+		animals.add(eidechse);
+		// sort by speed in ascending order using the comparable interface
+		Collections.sort(animals);
+		
+		// hide several ui elements for first view
+		bannerView.setAlpha(0);
+		butStop.setAlpha(0);
+		butStartPause.setAlpha(0);
+		lblDistance.setAlpha(0);
+		lblAvgSpeed.setAlpha(0);
+		lblTotalTime.setAlpha(0);
+		lblResultText.setAlpha(0);
 		
 		// getting GPS status
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		
-		// Button StartPause
+        // iconButton
+        iconButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// first click just shows the ui
+				if(!repeat) {
+					bannerView.startAnimation(animationFadeIn);
+					butStartPause.startAnimation(animationFadeIn);
+					butStop.startAnimation(animationFadeIn);
+					
+					anglesUpView.startAnimation(animationFadeOut);
+					lblHelpText.startAnimation(animationFadeOut);
+					
+					iconButton.setClickable(false);
+				// further clicks reset the app for a new run
+				} else {
+					// reset values
+					finalDistance = 0;
+					isRunning = false;
+					avgSpeedInKmh = 0;
+					startTime = 0;
+					totalTime = 0;
+					paused = false;
+					// reset ui
+					lblResultText.startAnimation(animationFadeOut);
+					
+					butStartPause.startAnimation(animationFadeIn);
+					butStop.startAnimation(animationFadeIn);
+					
+					iconButton.setImageResource(R.drawable.logo_raw);
+				}
+			}
+		});
+        
+		// button StartPause
 		butStartPause.setOnClickListener(new View.OnClickListener() {
              public void onClick(View v) {
-                 // Measurement not running yet
+                 // measurement not running yet
             	 if(!isRunning) {
             		 // GPS enabled?
             		 if(!isGPSEnabled) {
@@ -82,18 +191,28 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
             		 } else if(!isGPSFix) {
             			 Toast.makeText(getApplicationContext(), "No GPS signal found.", Toast.LENGTH_SHORT).show();
             		 } else {
-	            		 isRunning = true;
+            			 isRunning = true;
 	            		 butStartPause.setText("Pause");
 	            		 butStop.setClickable(true);
-	            		 startTime = System.currentTimeMillis();
+	            		 // resume from paused mode
+	            		 if(paused) {
+	            			 paused = false;
+	            			 // calculate total time
+	            			 totalTime += System.currentTimeMillis() - startTime;
+	            			 startTime = System.currentTimeMillis();
+	            		 // start a new run
+            			 } else {
+            				startTime = System.currentTimeMillis();
+            				lblDistance.startAnimation(animationFadeIn);
+							lblAvgSpeed.startAnimation(animationFadeIn);
+							lblTotalTime.startAnimation(animationFadeIn);
+            			 }
             		 }
-            	 // Measurement already running
+            	 // measurement already running
             	 } else {
             		 isRunning = false;
+            		 paused = true;
             		 butStartPause.setText("Resume");
-            		 stopTime = System.currentTimeMillis();
-            		 lblAvgSpeed.setText("Avg Speed: ");
-            		 lblTotalTime.setText("Total Time: " + TimeUnit.MILLISECONDS.toSeconds(stopTime - startTime) + " seconds");
             	 }
              }
          });
@@ -102,13 +221,25 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		// Button Stop
 		butStop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-            	// send data with the intent
-            	intent.putExtra(EXTRA_AVGSPEED, avgSpeed);
-            	// open resultView
-            	startActivity(intent);
-            	// finish this activity
-            	finish();
+            	isRunning = false;
+            	
+            	// show result
+        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
+        		if(resultAnimal != null) {
+        			// show image of resultAnimal and it's name
+        			iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
+        			lblResultText.setText("Du warst schon so schnell wie ein/e " + resultAnimal.getScreenName() + "!");
+        		} else {
+        			lblResultText.setText("Something went wrong...");
+        		}
+        		// fade views
+        		lblResultText.startAnimation(animationFadeIn);
+            	butStartPause.startAnimation(animationFadeOut);
+            	butStop.startAnimation(animationFadeOut);
+            	
+            	// activate middle icon to act as a restart button
+            	repeat = true;
+            	iconButton.setClickable(true);
             }
         });
 		
@@ -126,42 +257,40 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 				// for isGPSFix
 			    mLastLocationMillis = SystemClock.elapsedRealtime();
 			    
-			    // get current location
-				actualLatitude = location.getLatitude();
-				actualLongitude = location.getLongitude();
-				if((lastLatitude == 0.0)&&(lastLongitude == 0.0)){
-					lastLongitude = actualLongitude;
-					lastLatitude = actualLatitude;	
-				}
-				
-				// get travelled distance since last update
-				try{
-					Location.distanceBetween(actualLatitude, actualLongitude, lastLatitude, lastLongitude,results);
-				} catch(IllegalArgumentException e){
-					// ....
-				}
-				currentDistance = results[0];
-				finalDistance += currentDistance;
-				
-				currentSpeed = location.getSpeed();
-				
-				// update labels
-				lblLat.setText("Lat: " + actualLatitude);
-				lblLong.setText("Long: " + actualLongitude);
-				lblTotalSpeed.setText("Total Speed: " + currentSpeed);
-				lblDistance.setText("Distance: " + currentDistance + " (" + finalDistance + ")");
-				double finalKilometer = finalDistance * 0.001;
-				double finalHours = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis() - startTime);
-				avgSpeed = finalKilometer/finalHours;
-				lblAvgSpeed.setText("Avg Speed: " + avgSpeed + " km/h");
-				
-				// save current location for next update
-				lastLongitude = actualLongitude;
-				lastLatitude = actualLatitude;
-				
-				// Show elapsed time since measurement started
+			    // things to do only when measurement is running
 				if(isRunning) {
-					lblTotalTime.setText("Total Time: " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime) + " seconds");
+				    // get current location
+					actualLatitude = location.getLatitude();
+					actualLongitude = location.getLongitude();
+					if((lastLatitude == 0.0)&&(lastLongitude == 0.0)){
+						lastLongitude = actualLongitude;
+						lastLatitude = actualLatitude;	
+					}
+					
+					// get travelled distance since last update
+					try{
+						Location.distanceBetween(actualLatitude, actualLongitude, lastLatitude, lastLongitude,results);
+					} catch(IllegalArgumentException e){
+						// ....
+					}
+					currentDistance = results[0];
+					finalDistance += currentDistance;
+					
+					// calculate total time
+	            	totalTime += System.currentTimeMillis() - startTime;
+	            	startTime = System.currentTimeMillis();
+					
+					// update labels
+					double finalKilometer = finalDistance * 0.001;
+					double finalHours = TimeUnit.MILLISECONDS.toHours(totalTime);
+					avgSpeedInKmh = finalKilometer/finalHours;
+					lblAvgSpeed.setText("Ø km/h " + avgSpeedInKmh);
+					lblDistance.setText(finalDistance + " m");
+					lblTotalTime.setText(TimeUnit.MILLISECONDS.toSeconds(totalTime)/60 + "m " + TimeUnit.MILLISECONDS.toSeconds(totalTime)%60 + "s");
+					
+					// save current location for next update
+					lastLongitude = actualLongitude;
+					lastLatitude = actualLatitude;
 				}
 				
 				// for isGPSFix
@@ -242,5 +371,22 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	           });
 	    final AlertDialog alert = builder.create();
 	    alert.show();
+	}
+	
+	// construct source paths of images
+	public static int getImageId(Context context, String imageName) {
+	    return context.getResources().getIdentifier("drawable/" + imageName, null, context.getPackageName());
+	}
+	
+	// find the one animal that is slightly slower than you
+	public Animal findSlowerAnimal(int yourSpeed){
+		for (int i = 0; i < animals.size(); i++){
+			if(animals.get(i).getSpeed() < yourSpeed){
+				resultAnimal = animals.get(i);
+			} else{
+				return resultAnimal;
+			}
+		}
+		return null;
 	}
 }

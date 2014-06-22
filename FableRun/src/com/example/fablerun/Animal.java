@@ -1,20 +1,39 @@
 package com.example.fablerun;
 
-public class Animal {
+public class Animal implements Comparable<Animal> {
 	
-	private String name;
+	private String fileName;
+	private String screenName;
 	private int speed;
 	
-	public Animal(String name, int speed){
-		this.name = name;
+	public Animal(String fileName, String screenName, int speed){
+		this.fileName = fileName;
+		this.screenName = screenName;
 		this.speed= speed;
 	}
+	
+	@Override
+	public int compareTo(Animal otherAnimal) {
+		if(this.speed > otherAnimal.speed) {
+			return -1;
+		}
+		else if(this.speed < otherAnimal.speed) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	}
 
-	public String getName() {
-		return name;
+	public String getFileName() {
+		return fileName;
 	}
 
 	public int getSpeed() {
 		return speed;
+	}
+	
+	public String getScreenName() {
+		return screenName;
 	}
 }

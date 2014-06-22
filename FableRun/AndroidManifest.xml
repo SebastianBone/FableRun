@@ -28,14 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.example.fablerun.StartActivity"
-            android:label="@string/title_activity_start" >
-        </activity>
-        <activity
-            android:name="com.example.fablerun.ResultActivity"
-            android:label="@string/title_activity_result" >
-        </activity>
     </application>
 
 </manifest>
