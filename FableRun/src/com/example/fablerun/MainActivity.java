@@ -48,6 +48,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	private long totalTime;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
+	private GpsStatus mStatus;
 	private boolean isGPSFix = false;
 	private Location mLastLocation = null;
 	private long mLastLocationMillis = 0;
@@ -144,7 +145,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		
 		// Acquire a reference to the system Location Manager
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-				
+		locationManager.addGpsStatusListener(this);
+		
+		
 		// getting GPS status
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		
@@ -288,7 +291,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 				// has GPS signal? If not stop here.
 				if(location == null) return;
 				// for isGPSFix
-			    mLastLocationMillis = SystemClock.elapsedRealtime();
+			    mLastLocationMillis = System.currentTimeMillis();
 			    
 			    // things to do only when measurement is running
 				if(isRunning) {
@@ -348,10 +351,12 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	// Monitor if phone has GPS signal
 	@Override
 	public void onGpsStatusChanged(int event) {
+		mStatus = locationManager.getGpsStatus(mStatus);
+		Toast.makeText(getApplicationContext(), "GPSstatusmethod", Toast.LENGTH_SHORT).show();
 		switch (event) {
 	    	case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
 	            if(mLastLocation != null) {
-	                isGPSFix = (SystemClock.elapsedRealtime() - mLastLocationMillis) < 3000;
+	                isGPSFix = (System.currentTimeMillis() - mLastLocationMillis) < 3000;
 	            }
 	            if(isGPSFix) { // A fix has been acquired.
 	                Toast.makeText(getApplicationContext(), R.string.gps_found_text, Toast.LENGTH_SHORT).show();
@@ -361,6 +366,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	        break;
 	        
 	    	case GpsStatus.GPS_EVENT_FIRST_FIX:
+	    		Toast.makeText(getApplicationContext(), R.string.gps_found_text, Toast.LENGTH_SHORT).show();
 	    		isGPSFix = true;
 	        break;
 		}
