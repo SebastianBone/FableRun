@@ -7,5 +7,16 @@
     <string name="title_activity_start">StartActivity</string>
     <string name="title_activity_result">ResultActivity</string>
     <string name="title_activity_debug">DebugActivity</string>
+    <string name="result_text">"Du warst schon so schnell wie ein/e "</string>
+    <string name="error_text">"Etwas ist schief gelaufen..."</string>
+    <string name="enable_gps_dialog">"Dein GPS ist deaktiviert. Möchtest du es jetzt aktivieren?"</string>
+	<string name="gps_found_text">"GPS Signal gefunden. Viel Spaß beim Laufen!"</string>
+	<string name="gps_lost_text">"GPS Signal verloren."</string>
+	<string name="no_gps_text">"Kein GPS Signal gefunden."</string>
+	<string name="resume_button_text">"Fortsetzen"</string>
+	<string name="pause_button_text">"Pause"</string>
+	<string name="help_text">Zum Starten berühren</string>
+	<string name="start_button_text">Start</string>
+	<string name="stop_button_text">Stop</string>
 
 </resources>

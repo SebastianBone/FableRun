@@ -189,10 +189,10 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
             			 buildAlertMessageNoGps();
             		 // GPS signal found?
             		 } else if(!isGPSFix) {
-            			 Toast.makeText(getApplicationContext(), "No GPS signal found.", Toast.LENGTH_SHORT).show();
+            			 Toast.makeText(getApplicationContext(), R.string.no_gps_text, Toast.LENGTH_SHORT).show();
             		 } else {
             			 isRunning = true;
-	            		 butStartPause.setText("Pause");
+	            		 butStartPause.setText(R.string.pause_button_text);
 	            		 butStop.setClickable(true);
 	            		 // resume from paused mode
 	            		 if(paused) {
@@ -212,7 +212,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
             	 } else {
             		 isRunning = false;
             		 paused = true;
-            		 butStartPause.setText("Resume");
+            		 butStartPause.setText(R.string.resume_button_text);
+            		 iconButton.setImageResource(R.drawable.pause);
             	 }
              }
          });
@@ -228,9 +229,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
         		if(resultAnimal != null) {
         			// show image of resultAnimal and it's name
         			iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
-        			lblResultText.setText("Du warst schon so schnell wie ein/e " + resultAnimal.getScreenName() + "!");
+        			lblResultText.setText(R.string.result_text + resultAnimal.getScreenName() + "!");
         		} else {
-        			lblResultText.setText("Something went wrong...");
+        			lblResultText.setText(R.string.error_text);
         		}
         		// fade views
         		lblResultText.startAnimation(animationFadeIn);
@@ -288,6 +289,10 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					lblDistance.setText(finalDistance + " m");
 					lblTotalTime.setText(TimeUnit.MILLISECONDS.toSeconds(totalTime)/60 + "m " + TimeUnit.MILLISECONDS.toSeconds(totalTime)%60 + "s");
 					
+					// update iconButton with the right animal
+	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
+        			iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
+					
 					// save current location for next update
 					lastLongitude = actualLongitude;
 					lastLatitude = actualLatitude;
@@ -317,9 +322,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	                isGPSFix = (SystemClock.elapsedRealtime() - mLastLocationMillis) < 3000;
 	            }
 	            if(isGPSFix) { // A fix has been acquired.
-	                Toast.makeText(getApplicationContext(), "GPS signal found. Happy running!", Toast.LENGTH_SHORT).show();
+	                Toast.makeText(getApplicationContext(), R.string.gps_found_text, Toast.LENGTH_SHORT).show();
 	            } else { // The fix has been lost.
-	            	Toast.makeText(getApplicationContext(), "GPS Signal has been lost.", Toast.LENGTH_SHORT).show();
+	            	Toast.makeText(getApplicationContext(), R.string.gps_lost_text, Toast.LENGTH_SHORT).show();
 	            }
 	        break;
 	        
@@ -357,7 +362,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	// No GPS message
 	private void buildAlertMessageNoGps() {
 	    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+	    builder.setMessage(R.string.enable_gps_dialog)
 	           .setCancelable(false)
 	           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 	               public void onClick(final DialogInterface dialog, final int id) {
