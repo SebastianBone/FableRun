@@ -95,7 +95,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		final Animation animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
 		final Animation animationFadeOut = AnimationUtils.loadAnimation(this, R.anim.fadeout);
 		
-		// create animals (will be sorted automatically)
+		// create animals (will be sorted automatically; parameters: "fileName", "screenName", speedInKmh)
 		Animal baer = new Animal("baer", "Bär", 30);
 		animals.add(baer);
 		Animal eichhoernchen = new Animal("eichhoernchen", "Eichhörnchen", 24);
