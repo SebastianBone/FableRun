@@ -30,7 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements GpsStatus.Listener {
-	// Global variables
+	// global variables
 	Context context;
 	private TextView lblAvgSpeed, lblTotalTime, lblDistance, lblHelpText, lblResultText;
 	private ImageButton iconButton;
@@ -166,6 +166,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					totalTime = 0;
 					paused = false;
 					// reset ui
+					butStartPause.setText(R.string.start_button_text);
+					
 					lblResultText.startAnimation(animationFadeOut);
 					
 					butStartPause.startAnimation(animationFadeIn);
