@@ -286,10 +286,10 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					double finalHours = TimeUnit.MILLISECONDS.toHours(totalTime);
 					avgSpeedInKmh = finalKilometer/finalHours;
 					lblAvgSpeed.setText("Ø km/h " + avgSpeedInKmh);
-					lblDistance.setText(finalDistance + " m");
+					lblDistance.setText(finalDistance + "m");
 					lblTotalTime.setText(TimeUnit.MILLISECONDS.toSeconds(totalTime)/60 + "m " + TimeUnit.MILLISECONDS.toSeconds(totalTime)%60 + "s");
 					
-					// update iconButton with the right animal
+					// update iconButton with the correct animal
 	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
         			iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
 					
