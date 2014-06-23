@@ -68,7 +68,6 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -135,7 +134,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		// hide several ui elements for first view
 		bannerView.setImageAlpha(0);
 		butStop.setAlpha(0);
+		butStop.setClickable(false);
 		butStartPause.setAlpha(0);
+		butStartPause.setClickable(false);
 		lblDistance.setAlpha(0);
 		lblAvgSpeed.setAlpha(0);
 		lblTotalTime.setAlpha(0);
@@ -154,12 +155,21 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 				// first click just shows the ui
 				if(!repeat) {
 					bannerView.startAnimation(animationFadeIn);
-					bannerView.setImageAlpha(1);
+					bannerView.setImageAlpha(255);
+					
 					butStartPause.startAnimation(animationFadeIn);
+					butStartPause.setAlpha(255);
+					butStartPause.setClickable(true);
+					
 					butStop.startAnimation(animationFadeIn);
+					butStop.setAlpha(255);
+					butStop.setClickable(true);
 					
 					anglesUpView.startAnimation(animationFadeOut);
+					anglesUpView.setImageAlpha(0);
+					
 					lblHelpText.startAnimation(animationFadeOut);
+					lblHelpText.setAlpha(0);
 					
 					iconButton.setClickable(false);
 				// further clicks reset the app for a new run
@@ -171,15 +181,23 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					startTime = 0;
 					totalTime = 0;
 					paused = false;
+					
 					// reset ui
 					butStartPause.setText(R.string.start_button_text);
 					
 					lblResultText.startAnimation(animationFadeOut);
+					lblResultText.setAlpha(0);
 					
 					butStartPause.startAnimation(animationFadeIn);
+					butStartPause.setAlpha(255);
+					butStartPause.setClickable(true);
+					
 					butStop.startAnimation(animationFadeIn);
+					butStop.setAlpha(255);
+					butStop.setClickable(true);
 					
 					iconButton.setImageResource(R.drawable.logo_raw);
+					iconButton.setClickable(false);
 				}
 			}
 		});
@@ -187,7 +205,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		// button StartPause
 		butStartPause.setOnClickListener(new View.OnClickListener() {
              public void onClick(View v) {
-                 // measurement not running yet
+                 // measurement not running yet (will be started or resumed)
             	 if(!isRunning) {
             		 
             		 // GPS enabled?
@@ -217,10 +235,11 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 							lblTotalTime.startAnimation(animationFadeIn);
             			 }
             		 }
-            	 // measurement already running
+            	 // measurement already running (will be paused)
             	 } else {
             		 isRunning = false;
             		 paused = true;
+            		 butStop.setClickable(false);
             		 butStartPause.setText(R.string.resume_button_text);
             		 iconButton.setImageResource(R.drawable.pause);
             	 }
@@ -244,8 +263,15 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
         		}
         		// fade views
         		lblResultText.startAnimation(animationFadeIn);
+        		lblResultText.setAlpha(255);
+        		
             	butStartPause.startAnimation(animationFadeOut);
+            	butStartPause.setAlpha(0);
+            	butStartPause.setClickable(false);
+            	
             	butStop.startAnimation(animationFadeOut);
+            	butStop.setAlpha(0);
+            	butStop.setClickable(false);
             	
             	// activate middle icon to act as a restart button
             	repeat = true;
@@ -379,14 +405,14 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	    builder.setMessage(R.string.enable_gps_dialog)
 	           .setCancelable(false)
-	           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	           .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 	               public void onClick(final DialogInterface dialog, final int id) {
 	                   startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 	                   // update if gps is enabled
 	                   isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 	               }
 	           })
-	           .setNegativeButton("No", new DialogInterface.OnClickListener() {
+	           .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 	               public void onClick(final DialogInterface dialog, final int id) {
 	                    dialog.cancel();
 	               }
