@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="10m 0s"
+                android:text="0m 0s"
                 android:textSize="18sp" />
 
             <TextView
@@ -72,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Ø 18 km/h "
+                android:text="Ø 0 km/h "
                 android:textSize="18sp" />
 
             <TextView
@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="3000m"
+                android:text="0m"
                 android:textSize="18sp" />
         </LinearLayout>
 

@@ -17,7 +17,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -45,7 +44,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	private Button butStartPause, butStop;
 	private boolean isRunning = false;
 	private long startTime = 0;
-	private long totalTime;
+	private long totalTime = 0;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
 	private GpsStatus mStatus;
@@ -233,9 +232,15 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	            		 // start a new run
             			 } else {
             				startTime = System.currentTimeMillis();
+            				
             				lblDistance.startAnimation(animationFadeIn);
+            				lblDistance.setAlpha(255);
+            				
 							lblAvgSpeed.startAnimation(animationFadeIn);
+							lblAvgSpeed.setAlpha(255);
+							
 							lblTotalTime.startAnimation(animationFadeIn);
+							lblTotalTime.setAlpha(255);
             			 }
             		 }
             	 // measurement already running (will be paused)
@@ -305,7 +310,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					
 					// get travelled distance since last update
 					try{
-						Location.distanceBetween(actualLatitude, actualLongitude, lastLatitude, lastLongitude,results);
+						Location.distanceBetween(actualLatitude, actualLongitude, lastLatitude, lastLongitude, results);
 					} catch(IllegalArgumentException e){
 						// ....
 					}
@@ -326,7 +331,11 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					
 					// update iconButton with the correct animal
 	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
-        			iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
+	        		if(resultAnimal != null) {
+	        			iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
+	        		} else {
+	        			iconButton.setImageResource(R.drawable.stein);
+	        		}
 					
 					// save current location for next update
 					lastLongitude = actualLongitude;
@@ -352,16 +361,10 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	@Override
 	public void onGpsStatusChanged(int event) {
 		mStatus = locationManager.getGpsStatus(mStatus);
-		Toast.makeText(getApplicationContext(), "GPSstatusmethod", Toast.LENGTH_SHORT).show();
 		switch (event) {
 	    	case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
 	            if(mLastLocation != null) {
 	                isGPSFix = (System.currentTimeMillis() - mLastLocationMillis) < 3000;
-	            }
-	            if(isGPSFix) { // A fix has been acquired.
-	                Toast.makeText(getApplicationContext(), R.string.gps_found_text, Toast.LENGTH_SHORT).show();
-	            } else { // The fix has been lost.
-	            	Toast.makeText(getApplicationContext(), R.string.gps_lost_text, Toast.LENGTH_SHORT).show();
 	            }
 	        break;
 	        
