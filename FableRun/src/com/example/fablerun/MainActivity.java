@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends Activity implements GpsStatus.Listener {
 	// global variables
 	Context context;
@@ -66,7 +67,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
  	// The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
 	
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		anglesUpView = (ImageView)findViewById(R.id.anglesUpView);
 		lblHelpText = (TextView)findViewById(R.id.lblHelpText);
 		lblResultText = (TextView)findViewById(R.id.lblResultText);
+		lblDistance = (TextView)findViewById(R.id.lblDistance);
 		
 		// initialize animations
 		final Animation animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
@@ -131,7 +133,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		Collections.sort(animals);
 		
 		// hide several ui elements for first view
-		bannerView.setAlpha(0);
+		bannerView.setImageAlpha(0);
 		butStop.setAlpha(0);
 		butStartPause.setAlpha(0);
 		lblDistance.setAlpha(0);
@@ -139,6 +141,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		lblTotalTime.setAlpha(0);
 		lblResultText.setAlpha(0);
 		
+		// Acquire a reference to the system Location Manager
+		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+				
 		// getting GPS status
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		
@@ -149,6 +154,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 				// first click just shows the ui
 				if(!repeat) {
 					bannerView.startAnimation(animationFadeIn);
+					bannerView.setImageAlpha(1);
 					butStartPause.startAnimation(animationFadeIn);
 					butStop.startAnimation(animationFadeIn);
 					
@@ -183,12 +189,16 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
              public void onClick(View v) {
                  // measurement not running yet
             	 if(!isRunning) {
+            		 
             		 // GPS enabled?
             		 if(!isGPSEnabled) {
             			 buildAlertMessageNoGps();
+            			 
             		 // GPS signal found?
             		 } else if(!isGPSFix) {
             			 Toast.makeText(getApplicationContext(), R.string.no_gps_text, Toast.LENGTH_SHORT).show();
+            		 
+            		 // everything ready to go
             		 } else {
             			 isRunning = true;
 	            		 butStartPause.setText(R.string.pause_button_text);
@@ -242,9 +252,6 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
             	iconButton.setClickable(true);
             }
         });
-		
-		// Acquire a reference to the system Location Manager
-		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		// Define a listener that responds to location updates
 		locationListener = new LocationListener() {
@@ -343,7 +350,13 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	@Override
 	protected void onPause() {
 	    super.onPause();
-	    locationManager.removeUpdates(locationListener);
+	    // stop using gps only if no measurement is running
+	    if(!isRunning) {
+	    	locationManager.removeUpdates(locationListener);
+	    // if paused while a measurement is running
+	    } else {
+	    	// make still running notification
+	    }
 	}
 	
 	@Override
@@ -355,7 +368,10 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1001, 0, locationListener);
+		// only needs to reactivate usage of gps if it has been deactivated before (see onPause() )
+		if(!isRunning) {
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1001, 0, locationListener);
+		}
 	}
 	
 	// No GPS message
@@ -366,6 +382,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 	               public void onClick(final DialogInterface dialog, final int id) {
 	                   startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+	                   // update if gps is enabled
+	                   isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 	               }
 	           })
 	           .setNegativeButton("No", new DialogInterface.OnClickListener() {

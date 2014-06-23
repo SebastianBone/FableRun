@@ -15,15 +15,16 @@
         android:id="@+id/bannerView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="0.24"
+        android:layout_gravity="top|center"
+        android:layout_weight="0.001"
         android:scaleType="fitCenter"
         android:src="@drawable/fable_run_banner_simple" />
 
     <RelativeLayout
         android:id="@+id/layoutCenter"
         android:layout_width="match_parent"
-        android:layout_height="186dp" >
+        android:layout_height="186dp"
+        android:layout_weight="0.21" >
 
         <ImageView
             android:id="@+id/imageView1"
@@ -49,7 +50,7 @@
         android:id="@+id/layoutLowerPart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.24" >
+        android:layout_weight="0.03" >
 
         <LinearLayout
             android:id="@+id/layoutLabels"
@@ -115,8 +116,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.24" >
+        android:layout_height="wrap_content" >
 
         <TextView
             android:id="@+id/lblResultText"
@@ -134,7 +134,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true" >
+            android:layout_centerVertical="true" >
 
             <Button
                 android:id="@+id/butStartPause"
