@@ -262,8 +262,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
         		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
         		if(resultAnimal != null) {
         			// show image of resultAnimal and it's name
-        			iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
-        			lblResultText.setText(R.string.result_text + resultAnimal.getScreenName() + "!");
+        			int identifier = getResources().getIdentifier(resultAnimal.getFileName(), "drawable", "com.example.fablerun");
+        			iconButton.setImageResource(identifier);
+        			lblResultText.setText("Du warst schon so schnell wie ein/e " + resultAnimal.getScreenName() + "!");
         		} else {
         			lblResultText.setText(R.string.error_text);
         		}
@@ -333,7 +334,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
 	        		if(resultAnimal != null) {
 	        			//iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
-	        			iconButton.setImageResource(R.drawable.stein);
+	        			int identifier = getResources().getIdentifier(resultAnimal.getFileName(), "drawable", "com.example.fablerun");
+	        			iconButton.setImageResource(identifier);
 	        		} else {
 	        			Toast.makeText(getApplicationContext(), "resultAnimal ist null", Toast.LENGTH_SHORT).show();
 	        		}
@@ -434,9 +436,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	}
 	
 	// construct source paths of images
-	public static int getImageId(Context context, String imageName) {
-	    return context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
-	}
+//	public static int getImageId(Context context, String imageName) {
+//	    return context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
+//	}
 	
 	// find the one animal that is slightly slower than you
 	public Animal findSlowerAnimal(int yourSpeed) {
