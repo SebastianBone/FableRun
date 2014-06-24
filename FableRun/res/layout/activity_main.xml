@@ -122,6 +122,7 @@
             android:id="@+id/lblResultText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:lines="2"

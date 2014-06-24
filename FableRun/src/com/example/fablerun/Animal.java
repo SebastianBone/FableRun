@@ -1,5 +1,7 @@
 package com.example.fablerun;
 
+import android.content.Context;
+
 public class Animal implements Comparable<Animal> {
 	
 	private String fileName;
@@ -15,10 +17,10 @@ public class Animal implements Comparable<Animal> {
 	@Override
 	public int compareTo(Animal otherAnimal) {
 		if(this.speed > otherAnimal.speed) {
-			return -1;
+			return 1;
 		}
 		else if(this.speed < otherAnimal.speed) {
-			return 1;
+			return -1;
 		}
 		else {
 			return 0;
