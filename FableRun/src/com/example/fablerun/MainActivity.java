@@ -233,7 +233,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	            		 butStartPause.setText(R.string.pause_button_text);
 	            		 butStop.setClickable(true);
 	            		 
-	            		 //new Timer start
+	            		 //new timer start
 	            		 startTime = SystemClock.uptimeMillis();
 	            		 customHandler.post(updateTimerThread);
 
@@ -338,7 +338,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					finalDistance = Math.round(finalDistance * 100f)/100f; 
 					// update labels
 					float finalKilometer = finalDistance * 0.001f;
-					float finalHours = TimeUnit.MILLISECONDS.toHours(updatedTime);
+					float finalHours = (float)TimeUnit.MILLISECONDS.toHours(updatedTime);
 					avgSpeedInKmh = finalKilometer/finalHours;
 					int avgSpeedInKmh2 = Math.round(avgSpeedInKmh);
 					lblAvgSpeed.setText("Ø " + avgSpeedInKmh2 + " km/h");
