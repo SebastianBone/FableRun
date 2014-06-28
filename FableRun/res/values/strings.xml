@@ -20,5 +20,6 @@
 	<string name="stop_button_text">Stop</string>
 	<string name="yes">Ja</string>
 	<string name="no">Nein</string>
+	<string name="restart">Berühre das Bild für einen neuen Lauf!</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.example.fablerun;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -34,11 +35,11 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements GpsStatus.Listener {
 	// global variables
 	Context context;
-	private TextView lblAvgSpeed, lblTotalTime, lblDistance, lblHelpText, lblResultText;
+	private TextView lblAvgSpeed, lblTotalTime, lblDistance, lblHelpText, lblResultText, lblRestart;
 	private ImageButton iconButton;
 	private ImageView bannerView, anglesUpView;
-	private float finalDistance = 0;
-	private float currentDistance;
+	private double finalDistance = 0;
+	private double currentDistance;
 	private Location locationNow = new Location("actual");
 	private Location locationBefore = new Location("last");
 	private Button butStartPause, butStop;
@@ -57,7 +58,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	private boolean isGPSFix = false;
 	private Location mLastLocation = null;
 	private long mLastLocationMillis = 0;
-	private float avgSpeedInKmh;
+	private double avgSpeedInKmh;
 	// flag that tells the iconButton if it shall reset for a
 	// 	2nd run or initialize the UI for a first run
 	private boolean repeat = false;
@@ -94,6 +95,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		lblHelpText = (TextView)findViewById(R.id.lblHelpText);
 		lblResultText = (TextView)findViewById(R.id.lblResultText);
 		lblDistance = (TextView)findViewById(R.id.lblDistance);
+		lblRestart = (TextView)findViewById(R.id.lblRestart);
 		
 		// initialize animations
 		final Animation animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
@@ -147,6 +149,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		lblAvgSpeed.setAlpha(0);
 		lblTotalTime.setAlpha(0);
 		lblResultText.setAlpha(0);
+		lblRestart.setAlpha(0);
 		
 		// Acquire a reference to the system Location Manager
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -192,6 +195,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					
 					lblResultText.startAnimation(animationFadeOut);
 					lblResultText.setAlpha(0);
+					
+					lblRestart.startAnimation(animationFadeOut);
+					lblRestart.setAlpha(0);
 					
 					butStartPause.startAnimation(animationFadeIn);
 					butStartPause.setAlpha(255);
@@ -240,8 +246,13 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	            		 // resume from paused mode
 	            		 if(paused) {
 	            			 paused = false;
-	            			 // show logo to avoid pause icon being shown when not moving
+	            			 // show animals instead of pause icon (logo as backup)
 	            			 iconButton.setImageResource(R.drawable.logo_raw);
+	            			 resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
+	            			 if(resultAnimal != null) {
+	            				 int identifier = getResources().getIdentifier(resultAnimal.getFileName(), "drawable", "com.example.fablerun");
+	            				 iconButton.setImageResource(identifier);
+	            			 }
 	            		 // start a new run
             			 } else {
             				lblDistance.startAnimation(animationFadeIn);
@@ -294,6 +305,9 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
         		lblResultText.startAnimation(animationFadeIn);
         		lblResultText.setAlpha(255);
         		
+        		lblRestart.startAnimation(animationFadeIn);
+        		lblRestart.setAlpha(255);
+        		
             	butStartPause.startAnimation(animationFadeOut);
             	butStartPause.setAlpha(0);
             	butStartPause.setClickable(false);
@@ -332,30 +346,29 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					}
 					
 					// calculate total distance
-					currentDistance = locationNow.distanceTo(locationBefore);
+					currentDistance = (double)locationNow.distanceTo(locationBefore);
 					finalDistance += currentDistance;
-	            	
-					finalDistance = Math.round(finalDistance * 100f)/100f; 
+					//finalDistance = Math.round(finalDistance * 100)/100; 
+					
 					// update labels
-					float finalKilometer = finalDistance * 0.001f;
-					float finalHours = (float)TimeUnit.MILLISECONDS.toHours(updatedTime);
+					double finalKilometer = finalDistance * 0.001;
+					double finalHours = TimeUnit.MILLISECONDS.toHours(updatedTime);
 					avgSpeedInKmh = finalKilometer/finalHours;
-					int avgSpeedInKmh2 = Math.round(avgSpeedInKmh);
-					lblAvgSpeed.setText("Ø " + avgSpeedInKmh2 + " km/h");
-					lblDistance.setText(finalDistance + "m");
+					lblAvgSpeed.setText("Ø " + avgSpeedInKmh + " km/h");
+					// clean the format
+					DecimalFormat f = new DecimalFormat("#0.00"); 
+					lblDistance.setText(f.format(finalDistance) + "m");
 					
 					// DEBUGGING
 					Toast.makeText(getApplicationContext(),
-							"km: " + finalKilometer +
-							"h: " + finalHours +
-							"kmhF: " + avgSpeedInKmh2 +
-							"kmhI: " + avgSpeedInKmh,
+							"km: " + finalKilometer +			// funktioniert
+							" h: " + finalHours +				// immer 0.0 !
+							" kmhD: " + avgSpeedInKmh,			// immer Infinity !
 							Toast.LENGTH_LONG).show();
 					
 					// update iconButton with the correct animal
-	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh2);
+	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
 	        		if(resultAnimal != null) {
-	        			//iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
 	        			int identifier = getResources().getIdentifier(resultAnimal.getFileName(), "drawable", "com.example.fablerun");
 	        			iconButton.setImageResource(identifier);
 	        		} else {
