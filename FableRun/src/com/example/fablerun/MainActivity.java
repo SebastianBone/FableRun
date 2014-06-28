@@ -43,12 +43,14 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	private Location locationBefore = new Location("last");
 	private Button butStartPause, butStop;
 	private boolean isRunning = false;
-	//new Timer variables
+	//new timer variables
 	private long startTime = 0L;
 	private Handler customHandler = new Handler();
 	long timeInMilliseconds = 0L;
 	long timeSwapBuff = 0L;
 	long updatedTime = 0L;
+	//stop timer thread flag
+	private volatile boolean stopThread = false;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
 	private GpsStatus mStatus;
@@ -182,6 +184,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					avgSpeedInKmh = 0;
 					paused = false;
 					updatedTime = 0L;
+					timeSwapBuff = 0L;
+					stopThread = false;
 					
 					// reset ui
 					butStartPause.setText(R.string.start_button_text);
@@ -199,6 +203,10 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					
 					iconButton.setImageResource(R.drawable.logo_raw);
 					iconButton.setClickable(false);
+					
+					lblTotalTime.setText("0:00");
+					lblAvgSpeed.setText("Ø 0 km/h");
+					lblDistance.setText("0m");
 				}
 			}
 		});
@@ -227,11 +235,13 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	            		 
 	            		 //new Timer start
 	            		 startTime = SystemClock.uptimeMillis();
-	            		 customHandler.postDelayed(updateTimerThread, 0);
+	            		 customHandler.post(updateTimerThread);
 
 	            		 // resume from paused mode
 	            		 if(paused) {
 	            			 paused = false;
+	            			 // show logo to avoid pause icon being shown when not moving
+	            			 iconButton.setImageResource(R.drawable.logo_raw);
 	            		 // start a new run
             			 } else {
             				lblDistance.startAnimation(animationFadeIn);
@@ -255,7 +265,6 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
             		 // new paused Time
             		 timeSwapBuff += timeInMilliseconds;
             		 customHandler.removeCallbacks(updateTimerThread);
-
             	 }
              }
          });
@@ -267,7 +276,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
             	isRunning = false;
             	
             	//Timer stop
-            	
+            	stopThread = true;
+            	customHandler.removeCallbacks(updateTimerThread);
             	
             	// show result
         		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
@@ -334,6 +344,14 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					lblAvgSpeed.setText("Ø " + avgSpeedInKmh2 + " km/h");
 					lblDistance.setText(finalDistance + "m");
 					
+					// DEBUGGING
+					Toast.makeText(getApplicationContext(),
+							"km: " + finalKilometer +
+							"h: " + finalHours +
+							"kmhF: " + avgSpeedInKmh2 +
+							"kmhI: " + avgSpeedInKmh,
+							Toast.LENGTH_LONG).show();
+					
 					// update iconButton with the correct animal
 	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh2);
 	        		if(resultAnimal != null) {
@@ -367,17 +385,19 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	//Timer clock-Thread
 	private Runnable updateTimerThread = new Runnable(){
 		public void run(){
-			timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
-			
-			updatedTime = timeSwapBuff + timeInMilliseconds;
-			
-			int secs = (int) (updatedTime / 1000);
-			int mins = secs / 60;
-			secs = secs % 60;
-			//int milliseconds = (int) (updatedTime % 1000);
-			lblTotalTime.setText(""+mins+":"
-								+String.format("%02d", secs));
-			customHandler.postDelayed(this, 0);
+			if(!stopThread) {
+				timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+				
+				updatedTime = timeSwapBuff + timeInMilliseconds;
+				
+				int secs = (int) (updatedTime / 1000);
+				int mins = secs / 60;
+				secs = secs % 60;
+				//int milliseconds = (int) (updatedTime % 1000);
+				lblTotalTime.setText(""+mins+":"
+									+String.format("%02d", secs));
+				customHandler.postDelayed(this, 0);
+			}
 		}
 	};
 	
