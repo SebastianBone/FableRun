@@ -49,7 +49,6 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	long timeInMilliseconds = 0L;
 	long timeSwapBuff = 0L;
 	long updatedTime = 0L;
-
 	private LocationManager locationManager;
 	private LocationListener locationListener;
 	private GpsStatus mStatus;
@@ -151,10 +150,6 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.addGpsStatusListener(this);
 		
-		
-		// getting GPS status
-        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-		
         // iconButton
         iconButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -213,6 +208,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
              public void onClick(View v) {
                  // measurement not running yet (will be started or resumed)
             	 if(!isRunning) {
+            		 // update if gps is enabled
+            		 isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             		 
             		 // GPS enabled?
             		 if(!isGPSEnabled) {
@@ -447,8 +444,6 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	           .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 	               public void onClick(final DialogInterface dialog, final int id) {
 	                   startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-	                   // update if gps is enabled
-	                   isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 	               }
 	           })
 	           .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
