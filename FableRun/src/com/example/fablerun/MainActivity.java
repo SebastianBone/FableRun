@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	private boolean isGPSFix = false;
 	private Location mLastLocation = null;
 	private long mLastLocationMillis = 0;
-	private double avgSpeedInKmh;
+	private float avgSpeedInKmh;
 	// flag that tells the iconButton if it shall reset for a
 	// 	2nd run or initialize the UI for a first run
 	private boolean repeat = false;
@@ -68,7 +68,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	// flag for GPS status
     private boolean isGPSEnabled = false;
     // The minimum distance to change Updates in meters
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 0 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 2; // 0 meters
  	// The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
 	
@@ -186,7 +186,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					isRunning = false;
 					avgSpeedInKmh = 0;
 					paused = false;
-					timeSwapBuff = 0L;
+					updatedTime = 0L;
 					
 					// reset ui
 					butStartPause.setText(R.string.start_button_text);
@@ -328,15 +328,17 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					currentDistance = locationNow.distanceTo(locationBefore);
 					finalDistance += currentDistance;
 	            	
+					finalDistance = Math.round(finalDistance * 100f)/100f; 
 					// update labels
-					double finalKilometer = finalDistance * 0.001;
-					double finalHours = TimeUnit.MILLISECONDS.toHours(updatedTime);
+					float finalKilometer = finalDistance * 0.001f;
+					float finalHours = TimeUnit.MILLISECONDS.toHours(updatedTime);
 					avgSpeedInKmh = finalKilometer/finalHours;
-					lblAvgSpeed.setText("Ø " + avgSpeedInKmh + " km/h");
+					int avgSpeedInKmh2 = Math.round(avgSpeedInKmh);
+					lblAvgSpeed.setText("Ø " + avgSpeedInKmh2 + " km/h");
 					lblDistance.setText(finalDistance + "m");
 					
 					// update iconButton with the correct animal
-	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh);
+	        		resultAnimal = findSlowerAnimal((int)avgSpeedInKmh2);
 	        		if(resultAnimal != null) {
 	        			//iconButton.setImageResource(getImageId(context, resultAnimal.getFileName()));
 	        			int identifier = getResources().getIdentifier(resultAnimal.getFileName(), "drawable", "com.example.fablerun");
@@ -433,7 +435,7 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 		super.onResume();
 		// only needs to reactivate usage of gps if it has been deactivated before (see onPause() )
 		if(!isRunning) {
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1001, 0, locationListener);
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
 		}
 	}
 	
