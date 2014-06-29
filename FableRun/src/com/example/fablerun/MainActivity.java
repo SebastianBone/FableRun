@@ -40,6 +40,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 	private ImageView bannerView, anglesUpView;
 	private double finalDistance = 0;
 	private double currentDistance;
+	private double finalKilometer;
+	private double finalHours;
 	private Location locationNow = new Location("actual");
 	private Location locationBefore = new Location("last");
 	private Button butStartPause, butStop;
@@ -351,8 +353,8 @@ public class MainActivity extends Activity implements GpsStatus.Listener {
 					//finalDistance = Math.round(finalDistance * 100)/100; 
 					
 					// update labels
-					double finalKilometer = finalDistance * 0.001;
-					double finalHours = TimeUnit.MILLISECONDS.toHours(updatedTime);
+					finalKilometer = finalDistance * 0.001;
+					finalHours = TimeUnit.MILLISECONDS.toHours(updatedTime);
 					avgSpeedInKmh = finalKilometer/finalHours;
 					lblAvgSpeed.setText("Ø " + avgSpeedInKmh + " km/h");
 					// clean the format
